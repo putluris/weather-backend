@@ -1,81 +1,76 @@
-const express = require('express')
-const app = express()
-const port = 3000
+" use strict"
+var express = require('express')
+var app = express()
+var cors = require('cors')
+const key = "Key Here"
 
-const key = "JWT TOKEN HERE"
-var bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(cors());
 
-app.get('/v1/hello', (req, res) => {
-  res.send('Hello World!')
-  })
 
-app.post('/v1/auth', (req, res) => {
-  // res.send('Auth Success')
-  username = req.body.username
-  password = req.body.password
-  if (username == "putluris" && password == "password"){
-    token = {
-      "jwt" : key,
-      //"expires": expiry 
-   }
-   res.json(token)
+app.get('/v1/weather',get_weather_v1)
+app.get('/v1/hello',get_hello)
+app.post('/v1/auth',post_auth)
 
+
+
+function get_weather_v1(req, res) {
+    let tokens = key
+    let token = req.query.token
+    if(tokens.includes(token)){
+        res.json({"coord":{"lon":-123.262,"lat":44.5646},"weather":[{"id":800,"main":"Clear","description":"clear sky","icon":"01n"}],"base":"stations","main":{"temp":282.61,"feels_like":282.61,"temp_min":280.58,"temp_max":285.29,"pressure":1018,"humidity":84},"visibility":10000,"wind":{"speed":0.89,"deg":225,"gust":0.89},"clouds":{"all":0},"dt":1642038331,"sys":{"type":2,"id":2040223,"country":"US","sunrise":1642002454,"sunset":1642035291},"timezone":-28800,"id":5720727,"name":"Corvallis","cod":200})
+    }
+     
 }
-  })
-app.get('/v1/weather', get_weather)
-function get_weather(req,response)
-{
-response.json(
-    {
-        "coord": {
-          "lon": -123.262,
-          "lat": 44.5646
-        },
-        "weather": [
-          {
-            "id": 801,
-            "main": "Clouds",
-            "description": "few clouds",
-            "icon": "02d"
-          }
-        ],
-        "base": "stations",
-        "main": {
-          "temp": 281.59,
-          "feels_like": 281.59,
-          "temp_min": 279.1,
-          "temp_max": 286.38,
-          "pressure": 1024,
-          "humidity": 75,
-          "sea_level": 1024,
-          "grnd_level": 1016
-        },
-        "visibility": 10000,
-        "wind": {
-          "speed": 1.07,
-          "deg": 17,
-          "gust": 1.14
-        },
-        "clouds": {
-          "all": 22
-        },
-        "dt": 1642982860,
-        "sys": {
-          "type": 2,
-          "id": 2010260,
-          "country": "US",
-          "sunrise": 1642952435,
-          "sunset": 1642986538
-        },
-        "timezone": -28800,
-        "id": 5720727,
-        "name": "Corvallis",
-        "cod": 200
+
+function get_hello(req,res){
+    //res.set('content-type', 'application/json')
+    let tokens = key
+    let token = req.query.token
+    console.log(req.query.token)
+    if(tokens.includes(token)){
+        res.json({"hello": "Hi I am keerthi"})
+    }
+}
+// const fs = require("fs");
+
+function post_auth(req,res){
+    let usernames = ['keerthi','keert','keerti']
+    let passwords = ['123','456','789']
+    // const obj = JSON.parse(req.body)
+    let username = req.body.username
+    let pwd = req.body.password
+
+    if(usernames.includes(username)){
+      if(passwords.includes(pwd)){
+          res.json({
+            "access-token": key,
+            "expires": "2022-01-11T22:18:26.625Z"
+          })
       }
-)
+  }
 }
-app.listen(port, () => {
-console.log(`Server Started`)
-})
+
+app.listen(3000)
+console.log('Node.js Express server is running on port 3000..')
+    
+    // fs.readFile("application.json", "utf8", (err, jsonString) => {
+    //     if (err) {
+    //       console.log("Error reading file from disk:", err);
+    //       return;
+    //     }
+    //     try {
+    //       const login = JSON.parse(jsonString);
+    //       //res.send(customer)
+    //       if(usernames.includes(login.username)){
+    //         if(passwords.includes(login.password)){
+    //             res.json({ "Sucess" : "Your API key is here: never-ever-reveal-your-token"})
+    //         }
+    //     }
+
+    //     } catch (err) {
+    //       console.log("Error parsing JSON string:", err);
+    //     }
+    //   });
